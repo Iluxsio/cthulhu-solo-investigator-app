@@ -1,0 +1,14 @@
+{
+	"data": [
+		{"type": "SANITY", "text": "Autoayuda: Accedes a tus recursos internos}, quizás relacionados con tu historia. Sientes una oleada de determinación interior. Haz una tirada de Cordura}, recuperando 1d6 de Cordura si tienes éxito}, perdiendo 1 de Cordura si no."},
+		{"type": "SANITY", "text": "Autoayuda: Accedes a tus recursos internos}, quizás relacionados con tu historia. Sientes una oleada de determinación interior. Haz una tirada de Cordura}, recuperando 1d6 de Cordura si tienes éxito}, perdiendo 1 de Cordura si no."},
+		{"type": "SANITY", "text": "Autoayuda: Accedes a tus recursos internos}, quizás relacionados con tu historia. Sientes una oleada de determinación interior. Haz una tirada de Cordura}, recuperando 1d6 de Cordura si tienes éxito}, perdiendo 1 de Cordura si no."},
+		{"type": "NPC", "text": "Te encuentras con un PNJ amistoso (tira en las tablas de PNJ}, volviendo a tirar si la palabra clave es negativa)."},
+		{"type": "NPC", "text": "Te encuentras con un PNJ amistoso (tira en las tablas de PNJ}, volviendo a tirar si la palabra clave es negativa)."},
+		{"type": "VERB", "text": "Tira en la tabla Verbos"},
+		{"type": "VERB", "text": "Tira en la tabla Verbos"},
+		{"type": "RANDOM", "text": "Tirada en la tabla de Random events"},
+		{"type": "RANDOM", "text": "Tirada en la tabla de Random events"},
+		{"type": "DANGER", "text": "Un descarado atentado contra tu vida"}
+	]
+  }

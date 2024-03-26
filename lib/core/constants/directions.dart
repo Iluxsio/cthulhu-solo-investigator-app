@@ -1,0 +1,13 @@
+String DIRECTION_TYPE_REST = "Descanso";
+String DIRECTION_TYPE_DEVELOPMENT = "Desarrollo";
+String DIRECTION_TYPE_DISCOVERY = "Descubrimiento";
+String DIRECTION_TYPE_DANGER = "Peligro";
+String DIRECTION_TYPE_EVENT = "Evento";
+
+String DIRECTION_DISTURBANCE_NOTHING = "Nada. -2 a Mitos";
+String DIRECTION_DISTURBANCE_SENSES = "Vision-Dream-Hearing";
+String DIRECTION_DISTURBANCE_EVENT = "Evento";
+
+String DIRECTION_EVENT_HEAR = "Escuchas";
+String DIRECTION_EVENT_SEE = "Ves";
+String DIRECTION_EVENT_EVENTFUL = "Suceso";

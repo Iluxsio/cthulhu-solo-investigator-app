@@ -1,0 +1,14 @@
+{
+	"data": [
+	  {"type": "(Roll d100) 1-10: Archaeology / 11-20: Charm / 21-30: History / 31- 40: Intimidate / 41-50: Listen / 51- 60: Occult / 61-70: Persuade / 71-80: Psychology / 81-90: Science / 91-100: Spot Hidden", "text": "Descubres una pista o algo directamente relacionado con el descubrimiento del misterio. Tira en la Tabla de Pistas o en la Tabla de Verbos (a tu elección). Con el contexto de tu Tirada de Habilidad, esto debería decirte lo que has descubierto"},
+	  {"type": "(Roll d100) 1-50: EDU / 51-100: INT", "text": "A través de la investigación/revelación/chispa de memoria, relacionas dos informaciones que has aprendido"},
+	  {"type": "Luck Roll", "text": "Alguien te deja una nota que te indica la dirección correcta."},
+	  {"type": "1-5: Str / 6-10: Con / 11-15: Dex / 16- 20: Int / 21-25: Pow / 26-30: Anthropology /31-35: Charm / 36- 40: Disguise / 41-45: Fast Talk / 46- 50: History / 51-55: Intimidate / 56- 60: Law / 61-65: Navigate / 66-70: Occult / 71-75: Persuade / 76-80: Psychology / 81-85: Spot Hidden / 86-90: Science / 91-95: Sleight of Hand / 96-100: Track", "text": "Observas/te ves envuelto en algún suceso directamente relacionado con lo que estás investigando"},
+	  {"type": "1-20: Int Roll / 21-40: History / 41-60: Psychology / 61-80: Science / 81-100: Edu", "text": "Una noticia relacionada con su caso"},
+	  {"type": "1-25: Disguise / 26-50: Listen / 51-75: Language / 76-100: Psychoanalysis", "text": "Oyes por casualidad a alguien hablar del tema que estás investigando. Puede que esté indirectamente relacionado, pero la conversación te interesa. ¿O sólo estás oyendo cosas? Haz una tirada de Preguntas y Respuestas o utiliza la Tabla de Rumores."},
+	  {"type": "1-50: History / 51-100: Int", "text": "Su memoria se despierta en relación con algo que había oído sobre un aspecto del caso, hace algún tiempo."},
+	  {"type": "1-20: Charm / 21-40: Int / 41- 60: Persuade / 61-80: Psychology / 81-100: Fast Talk", "text": "Te encuentras con alguien, posiblemente un familiar de alguien que fue víctima de este misterio. (Tira en las tablas de NPC). Esto ha llegado más lejos de lo que pensabas..."},
+	  {"type": "Intelligence Roll", "text": "Alguien con conocimiento del caso viene a ti con una advertencia"},
+	  {"type": "1-25: Edu / 25-50: Int / 51-75: History / 76-100: Psychology", "text": "Algo que usted suponía sobre el caso resulta ser erróneo. Se revela la verdad sobre este aspecto del caso."}
+	]
+  }

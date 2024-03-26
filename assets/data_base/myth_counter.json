@@ -1,0 +1,9 @@
+{
+	"data": [
+		{"event": "Inquietante", "counter": 1, "sanity": "0/1 - 1d2 - 1d3"},
+		{"event": "Miedo", "counter": 2, "sanity": "0/1d4 - 1d4+1"},
+		{"event": "Terrorífico", "counter": 5, "sanity": "1/1d6 - 1d6+1"},
+		{"event": "Petrificante", "counter": 10, "sanity": "2/1d8 - 1d10"},
+		{"event": "Disociación", "counter": 15, "sanity": "1d10/1d20"}
+	]
+}
