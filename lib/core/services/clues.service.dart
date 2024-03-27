@@ -31,7 +31,6 @@ class CluesService {
     List<dynamic> jsonList = await _jsonService.getObjectList('assets/data_base/clues.json');
     inspect(jsonList);
     List<Map<String, dynamic>> jsonData = jsonList.cast<Map<String, dynamic>>();
-    // List<Clues> cluesList = jsonData.map((json) => Clues.fromJson(jsonData)).toList();
     Clues clue = Clues.fromJson(jsonData);
     return clue;
   }

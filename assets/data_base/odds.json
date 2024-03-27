@@ -1,0 +1,11 @@
+{
+	"data": [
+	  {"odds": -60, "title": "Imposible"},
+	  {"odds": -40, "title": "Improbable"},
+	  {"odds": -20, "title": "Poco probable"},
+	  {"odds": 0, "title": "Posible"},
+	  {"odds": 20, "title": "Probable"},
+	  {"odds": 40, "title": "Alto probable"},
+	  {"odds": 60, "title": "Certeza"}
+	]
+}

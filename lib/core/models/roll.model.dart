@@ -1,6 +1,7 @@
 import 'package:cthulhu_solo_investigator_app/core/models/clues.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/direction.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/npc.model.dart';
+import 'package:cthulhu_solo_investigator_app/core/models/odds.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/verbs.model.dart';
 
 class Roll {
@@ -9,11 +10,13 @@ class Roll {
   DirectionRoll? directionRoll;
   VerbRoll? verbRoll;
   CluesRoll? cluesRoll;
+  QuestionRoll? questionRoll;
   Roll({
     required this.type,
     this.npc,
     this.directionRoll,
     this.verbRoll,
-    this.cluesRoll
+    this.cluesRoll,
+    this.questionRoll
   });
 }

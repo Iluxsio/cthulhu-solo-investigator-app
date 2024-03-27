@@ -2,15 +2,18 @@ import 'dart:developer';
 import 'package:cthulhu_solo_investigator_app/core/models/clues.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/direction.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/npc.model.dart';
+import 'package:cthulhu_solo_investigator_app/core/models/odds.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/roll.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/verbs.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/services/clues.service.dart';
 import 'package:cthulhu_solo_investigator_app/core/services/direction.service.dart';
 import 'package:cthulhu_solo_investigator_app/core/services/npc.service.dart';
+import 'package:cthulhu_solo_investigator_app/core/services/question.service.dart';
 import 'package:cthulhu_solo_investigator_app/core/services/verbs.service.dart';
 import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/clues_card.dart';
 import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/direction_card.dart';
 import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/npc_card.dart';
+import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/question_card.dart';
 import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/verbs_card.dart';
 import 'package:flutter/material.dart';
 import 'package:cthulhu_solo_investigator_app/core/constants/rollTypes.dart' as rollTypes;
@@ -26,7 +29,7 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
   final DirectionService _directionService = DirectionService();
   final VerbsService _verbsService = VerbsService();
   final CluesService _cluesService = CluesService();
-
+  final QuestionService _questionService = QuestionService();
   late ValueNotifier<int> parentNotifier;
   List<Roll> rolls = [];
   List<NPC> npcs = [];
@@ -44,12 +47,15 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Row(
+            Wrap(
+              spacing: 8.0, // spacing between adjacent items
+              runSpacing: 4.0,
               children: [
                 _buildButtonClues(),
                 _buildButtonVerbs(),
                 _buildButtonNPC(),
-                _buildButtonDirection()
+                _buildButtonDirection(),
+                _buildButtonQuestion()
               ],
             ),
             SizedBox(
@@ -73,6 +79,8 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
         return DirectionCard(roll.directionRoll!);
       case rollTypes.ROLL_CLUE:
         return CluesCard(roll.cluesRoll!);
+      case rollTypes.ROLL_QUESTION:
+        return QuestionCard(roll.questionRoll!);
       default:
         return Text("No hay una tirada seleccionada");
     }
@@ -131,5 +139,91 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
       child: const Text('Dirección'),
     );
   }
+
+  Widget _buildButtonQuestion() {
+    return ElevatedButton(
+      onPressed: () async {
+        _showQuestionDialog();
+      },
+      child: const Text('Pregunta'),
+    );
+  }
+
+  void _onSubmitQuestion(QuestionRoll qaRoll) {
+    setState(() {
+      Roll newRoll = Roll(type: rollTypes.ROLL_QUESTION, questionRoll: qaRoll);
+      rolls.add(newRoll);
+      inspect(rolls);
+    });
+  }
+
+  void _showQuestionDialog() {
+    final TextEditingController questionInput = TextEditingController();
+    String selectedOption = 'Posible';
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Ask a Question'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextField(
+                  controller: questionInput,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(left: 16.0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    labelText: 'Escribe tu pregunta',
+                  ),
+                ),
+              SizedBox(height: 20),
+              DropdownButton<String>(
+                value: selectedOption,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedOption = newValue!;
+                  });
+                },
+                items: <String>[
+                  'Imposible',
+                  'Improbable',
+                  'Poco probable',
+                  'Posible',
+                  'Probable',
+                  'Alto probable',
+                  'Certeza'
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () async {
+                String question = questionInput.text;
+                QuestionRoll qaRoll = await _questionService.getQuestionRoll(question, selectedOption);
+                _onSubmitQuestion(qaRoll);
+                Navigator.of(context).pop();
+              },
+              child: Text('Submit'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
 }
