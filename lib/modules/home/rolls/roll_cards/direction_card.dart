@@ -13,29 +13,50 @@ class DirectionCard extends StatelessWidget {
       width: 200,
       margin: EdgeInsets.only(bottom:8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color.fromRGBO(19, 19, 19, 1),
         borderRadius: BorderRadius.circular(16.0),
         border: Border.all(
-            color: const Color.fromRGBO(179, 179, 193, 1),
-            width: 1,
-          ),
+          color: Color.fromARGB(255, 255, 212, 21),
+          width: 2,
+        ),
       ),
       padding: EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Dirección de la historia:'),
-          Text(directionRoll.directionType),
-          if(directionRoll.directionType == "Evento") ...{
-            Text('${directionRoll.directionSubType}'),
+          _buildTitle('Dirección de la historia:'),
+          _buildText(directionRoll.directionType),
+          if (directionRoll.directionTypeInfo != "") ...{
+            _buildText(directionRoll.directionTypeInfo),
+            SizedBox(height: 8),
           },
-          Text('${directionRoll.directionTypeInfo}'),
-          Text('${directionRoll.directionSubTypeInfo}'),
+          _buildTitle(directionRoll.directionSubType),
+
+          if(directionRoll.directionSubTypeInfo != "") ...{
+            _buildText(directionRoll.directionSubTypeInfo),
+            SizedBox(height: 8),
+          },
+          if(directionRoll.directionSubSubType != "") ...{
+            _buildText(directionRoll.directionSubSubType),
+          },
           if (directionRoll.actionList.length >= 1) ... {
-            Text('${responsesArray.join(', ')}'),
+            _buildTitle('Verbos:'),
+            _buildText('${responsesArray.join(', ')}'),
           }
         ],
       ),
     );
+  }
+
+  Widget _buildTitle(String title) {
+    return Text(title,
+        style: TextStyle(
+            color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600));
+  }
+
+  Widget _buildText(String text) {
+    return Container(
+        padding: EdgeInsets.only(left: 20),
+        child: Text(text, style: TextStyle(color: Colors.white)));
   }
 }

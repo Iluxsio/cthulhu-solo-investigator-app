@@ -1,11 +1,7 @@
 class SceneRoll {
-  String type;
-  String scene;
-  String clue;
+  final String type;
+  final String response;
+  final int roll;
 
-  SceneRoll({
-    required this.type,
-    required this.scene,
-    required this.clue
-  });
+  SceneRoll({required this.type, required this.response, required this.roll});
 }

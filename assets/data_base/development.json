@@ -1,14 +1,14 @@
 {
 	"data": [
 		{"type": "SANITY", "text": "Autoayuda: Accedes a tus recursos internos}, quizás relacionados con tu historia. Sientes una oleada de determinación interior. Haz una tirada de Cordura}, recuperando 1d6 de Cordura si tienes éxito}, perdiendo 1 de Cordura si no."},
-		{"type": "SANITY", "text": "Autoayuda: Accedes a tus recursos internos}, quizás relacionados con tu historia. Sientes una oleada de determinación interior. Haz una tirada de Cordura}, recuperando 1d6 de Cordura si tienes éxito}, perdiendo 1 de Cordura si no."},
-		{"type": "SANITY", "text": "Autoayuda: Accedes a tus recursos internos}, quizás relacionados con tu historia. Sientes una oleada de determinación interior. Haz una tirada de Cordura}, recuperando 1d6 de Cordura si tienes éxito}, perdiendo 1 de Cordura si no."},
-		{"type": "NPC", "text": "Te encuentras con un PNJ amistoso (tira en las tablas de PNJ}, volviendo a tirar si la palabra clave es negativa)."},
-		{"type": "NPC", "text": "Te encuentras con un PNJ amistoso (tira en las tablas de PNJ}, volviendo a tirar si la palabra clave es negativa)."},
-		{"type": "VERB", "text": "Tira en la tabla Verbos"},
+		{"type": "NPC", "text": "Te encuentras con un PNJ amistoso (tira en las tablas de PNJ, volviendo a tirar si la palabra clave es negativa)."},
 		{"type": "VERB", "text": "Tira en la tabla Verbos"},
 		{"type": "RANDOM", "text": "Tirada en la tabla de Random events"},
-		{"type": "RANDOM", "text": "Tirada en la tabla de Random events"},
+		{"type": "NPC", "text": "Te encuentras con un PNJ aparentemente neutral. Por ejemplo: Un policía de ronda, un lugareño errante, un niño curioso. La palabra clave aquí es aparentemente. Probablemente son neutrales, pero posiblemente no. Tal vez te estén ayudando en secreto, o se te estén oponiendo. Aún no lo sabes."},
+		{"type": "RANDOM", "text": "Acontecimiento neutro. La vida mundana se presenta de alguna manera. La gente sigue su rutina diaria, ciega a los acontecimientos que estás presenciando."},
+		{"type": "DANGER", "text": "Encuentras/observas/oyes algo que pone a prueba tu Cordura. Haz cuatro tiradas en la tabla de Verbos, luego consulta la Tabla de Mythos para calibrar el nivel apropiado del suceso"},
+		{"type": "DANGER", "text": "Te encuentras con un PNJ hostil (tira en las tablas de PNJ, volviendo a tirar si el resultado de la palabra clave es positivo)."},
+		{"type": "DANGER", "text": "Te ocurre algo horrible. Tal vez te ataquen, te capturen o caigas víctima de alguna trampa atroz. Haz cuatro tiradas en la tabla de Verbos, interpretando negativamente, y luego consulta la Tabla de Mitos para calibrar el nivel apropiado del suceso."},
 		{"type": "DANGER", "text": "Un descarado atentado contra tu vida"}
 	]
   }

@@ -1,9 +1,10 @@
 import 'package:cthulhu_solo_investigator_app/core/models/npc.model.dart';
+import 'package:cthulhu_solo_investigator_app/core/models/scene.model.dart';
 import 'package:flutter/material.dart';
 
-class NPCCard extends StatelessWidget {
-  final NPC npcRoll;
-  NPCCard(this.npcRoll);
+class SceneCard extends StatelessWidget {
+  final SceneRoll sceneRoll;
+  SceneCard(this.sceneRoll);
   late ValueNotifier<int> parentNotifier;
 
   @override
@@ -21,17 +22,14 @@ class NPCCard extends StatelessWidget {
       ),
       padding: EdgeInsets.all(14),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Row(children: [
-            Text('NPC:',
-              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),],),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text('${npcRoll.fullName} (${npcRoll.gender})', style: TextStyle(color: Colors.white)),
-              Text('${npcRoll.job} || ${npcRoll.adjective}', style: TextStyle(color: Colors.white)),
-            ],
-          ),
+          Text('Escenario:',
+              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+          Container(
+            padding: EdgeInsets.only(left: 20),
+            child: Text(sceneRoll.response, style: TextStyle(color: Colors.white))),
         ],
       ),
     );

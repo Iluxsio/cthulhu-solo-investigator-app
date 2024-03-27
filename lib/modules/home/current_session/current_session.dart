@@ -4,16 +4,19 @@ import 'package:cthulhu_solo_investigator_app/core/models/direction.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/npc.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/odds.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/roll.model.dart';
+import 'package:cthulhu_solo_investigator_app/core/models/scene.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/verbs.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/services/clues.service.dart';
 import 'package:cthulhu_solo_investigator_app/core/services/direction.service.dart';
 import 'package:cthulhu_solo_investigator_app/core/services/npc.service.dart';
 import 'package:cthulhu_solo_investigator_app/core/services/question.service.dart';
+import 'package:cthulhu_solo_investigator_app/core/services/scene.service.dart';
 import 'package:cthulhu_solo_investigator_app/core/services/verbs.service.dart';
 import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/clues_card.dart';
 import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/direction_card.dart';
 import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/npc_card.dart';
 import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/question_card.dart';
+import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/scene_card.dart';
 import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/verbs_card.dart';
 import 'package:flutter/material.dart';
 import 'package:cthulhu_solo_investigator_app/core/constants/rollTypes.dart' as rollTypes;
@@ -34,6 +37,7 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
   final VerbsService _verbsService = VerbsService();
   final CluesService _cluesService = CluesService();
   final QuestionService _questionService = QuestionService();
+  final SceneService _sceneService = SceneService();
   late ValueNotifier<int> parentNotifier;
   List<Roll> rolls = [];
   List<NPC> npcs = [];
@@ -65,7 +69,7 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
                 _buildButtonNPC(),
                 _buildButtonDirection(),
                 _buildButtonQuestion(),
-                _buildButtonQuestion()
+                _buildButtonScenes()
               ],
             ),     
             SizedBox(height: 8),       
@@ -77,7 +81,7 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
             ),
             SizedBox(
               height: 50,
-              child: Center(child: Text('Contador de Mitos: ${mythsCounterCurrent}')),
+              child: Center(child: Text('Contador de Mitos: ${mythsCounterCurrent}', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600))),
             ),
           ],
         ),
@@ -101,9 +105,9 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
             );
           },
         ),
-        // overlayStyle: ExpandableFabOverlayStyle(
-        //   blur: 5,
-        // ),
+        overlayStyle: ExpandableFabOverlayStyle(
+          blur: 4,
+        ),
         onOpen: () {
           debugPrint('onOpen');
         },
@@ -133,6 +137,8 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
         return CluesCard(roll.cluesRoll!);
       case rollTypes.ROLL_QUESTION:
         return QuestionCard(roll.questionRoll!);
+      case rollTypes.ROLL_SCENE:
+        return SceneCard(roll.sceneRoll!);
       default:
         return Text("No hay una tirada seleccionada");
     }
@@ -184,7 +190,7 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
   Widget _buildButtonDirection() {
     return ElevatedButton(
       onPressed: () async {
-        DirectionRoll directionRoll = await _directionService.getDirectionRoll();
+        DirectionRoll directionRoll = await _directionService.getDirectionRoll(mythsCounterCurrent);
         setState(() {
           Roll newRoll = Roll(type: rollTypes.ROLL_DIRECTION, directionRoll: directionRoll);
           rolls.add(newRoll);
@@ -204,13 +210,27 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
     );
   }
 
+  Widget _buildButtonScenes() {
+    return ElevatedButton(
+      onPressed: () async {
+        SceneRoll sceneRoll = await _sceneService.getSceneRoll(mythsCounterCurrent);
+        setState(() {
+          Roll newRoll = Roll(type: rollTypes.ROLL_SCENE, sceneRoll: sceneRoll);
+          rolls.add(newRoll);
+          _buttonScroll();
+        });      
+      },
+      child: const Text('Escenas'),
+    );
+  }
+
   List<Widget> _buildMythsCounterButtons() {
     List<Widget> buttonList = [];
     mythsCounterList.forEach((counter) {
       buttonList.add(
         FloatingActionButton.extended(
             heroTag: null,
-            label: Text('${counter.event} (+${counter.counter})'),
+            label: Text('${counter.event} (+${counter.counter})', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
             onPressed: () async {
             setState(() {
               final state = _key.currentState;

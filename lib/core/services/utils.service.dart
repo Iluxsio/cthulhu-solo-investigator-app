@@ -15,4 +15,5 @@ class UtilsService {
     List<int> randomNumbers = numbers.sublist(0, multipleNumber);
     return randomNumbers;
   }
+
 }
