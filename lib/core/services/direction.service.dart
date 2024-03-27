@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:cthulhu_solo_investigator_app/core/constants/directions.dart' as DIR_CONSTANTS;
+import 'package:cthulhu_solo_investigator_app/core/models/basic_roll.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/development.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/direction.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/npc.model.dart';
@@ -16,27 +17,27 @@ class DirectionService {
   final NPCService _npcService = NPCService();
 
   Future<DirectionRoll> getDirectionRoll() async {
-    String directionType = await getDirection();
-    String directionTypeInfo = '';
-    String directionSubType = "";
+    BasicRoll directionType = await getDirection();
+    String directionTypeInfo = "";
+    BasicRoll? directionSubType;
     String directionSubTypeInfo = "";
-    String directionSubSubType = "";
-    List<String> actionList = [];
+    BasicRoll? directionSubSubType;
+    List<BasicRoll> actionList = [];
     NPC? npc;
     // REST
-    if (directionType == DIR_CONSTANTS.DIRECTION_TYPE_REST) {
+    if (directionType.response == DIR_CONSTANTS.DIRECTION_TYPE_REST) {
       directionSubType = await getDisturbance();
-      if (directionSubType == DIR_CONSTANTS.DIRECTION_DISTURBANCE_SENSES) {
+      if (directionSubType.response == DIR_CONSTANTS.DIRECTION_DISTURBANCE_SENSES) {
         actionList = await _verbsService.getVerbs();
-      } else if(directionSubType == DIR_CONSTANTS.DIRECTION_DISTURBANCE_EVENT) {
+      } else if(directionSubType.response == DIR_CONSTANTS.DIRECTION_DISTURBANCE_EVENT) {
         directionSubSubType = await getDisturbanceEvent();
-        actionList = await getDisturbanceEvents(directionSubSubType);
+        actionList = await getDisturbanceEvents(directionSubSubType.response);
       }
     }
     // DEVELOPMENT
-    else if(directionType == DIR_CONSTANTS.DIRECTION_TYPE_DEVELOPMENT) {
+    else if(directionType.response == DIR_CONSTANTS.DIRECTION_TYPE_DEVELOPMENT) {
       DevelopmentRoll devRoll = await getDevelopment();
-      directionSubType = devRoll.type;
+      directionSubType = BasicRoll(response: devRoll.type, roll: devRoll.roll);
       directionSubTypeInfo = devRoll.text;
       if(devRoll.type == "RANDOM") {
         actionList.add(await getRandom());
@@ -50,40 +51,44 @@ class DirectionService {
       }
     }
     // DISCOVERY
-    else if(directionType == DIR_CONSTANTS.DIRECTION_TYPE_DISCOVERY) {
+    else if(directionType.response == DIR_CONSTANTS.DIRECTION_TYPE_DISCOVERY) {
       DevelopmentRoll devRoll = await getDiscovery();
-      directionSubType = devRoll.type;
+      directionSubType = BasicRoll(response: devRoll.type, roll: devRoll.roll);
       directionSubTypeInfo = devRoll.text;
       if(directionSubTypeInfo.contains("Rumor")) {
         actionList.add(await getRumour());
       }
     }
     // DANGER
-    else if(directionType == DIR_CONSTANTS.DIRECTION_TYPE_DANGER) {
-      directionTypeInfo = await getDanger();
-        actionList = await _verbsService.getVerbs();
+    else if(directionType.response == DIR_CONSTANTS.DIRECTION_TYPE_DANGER) {
+      BasicRoll danger = await getDanger();
+      directionTypeInfo = '(${danger.roll}) ${danger.response}';
+      actionList = await _verbsService.getVerbs();
     }
     // EVENT
-    else if(directionType == DIR_CONSTANTS.DIRECTION_TYPE_EVENT) {
-      directionSubType = DIR_CONSTANTS.DIRECTION_DISTURBANCE_EVENT;
+    else if(directionType.response == DIR_CONSTANTS.DIRECTION_TYPE_EVENT) {
+      directionSubType = BasicRoll(response: DIR_CONSTANTS.DIRECTION_DISTURBANCE_EVENT, roll: 0);
       directionSubSubType = await getDisturbanceEvent();
-      actionList = await getDisturbanceEvents(directionSubSubType);
+      actionList = await getDisturbanceEvents(directionSubSubType.response);
     }
     DirectionRoll directionRoll = DirectionRoll(
-      directionType: directionType, 
-      directionTypeInfo: directionTypeInfo, 
-      directionSubType: directionSubType, 
+      directionType: directionType.response,
+      directionTypeInfo: directionTypeInfo,
+      directionSubType: directionSubType != null ? directionSubType!.response : "", 
       directionSubTypeInfo: directionSubTypeInfo, 
-      directionSubSubType: directionSubSubType, 
-      actionList: actionList);
+      directionSubSubType: directionSubSubType != null ? directionSubSubType.response : "", 
+      actionList: actionList, 
+      directionTypeRoll: directionType.roll, 
+      directionSubTypeRoll: directionSubType != null ? directionSubType.roll : -1, 
+      directionSubSubRoll: directionSubSubType != null ? directionSubSubType.roll : -1);
     if (npc != null) {
       directionRoll.npc = npc;
     }
     return directionRoll;
   }
 
-  Future<List<String>> getDisturbanceEvents(String directionSubSubType) async {
-    List<String> actionList = [];
+  Future<List<BasicRoll>> getDisturbanceEvents(String directionSubSubType) async {
+    List<BasicRoll> actionList = [];
     if (directionSubSubType == DIR_CONSTANTS.DIRECTION_EVENT_HEAR) {
       actionList.add(await getAuditory());
       actionList.add(await getAuditoryWhere());
@@ -95,58 +100,67 @@ class DirectionService {
     return actionList;
   }
 
-  Future<String> getDirection() async {
+  Future<BasicRoll> getDirection() async {
     List<String> list = await _jsonService.getStringList('assets/data_base/direction.json');
     int randomInt = _utilsService.getRandomInt(list.length);
-    return list[randomInt];
+    BasicRoll roll = BasicRoll(response: list[randomInt], roll: randomInt);
+    return roll;
   }
 
-  Future<String> getDisturbance() async {
+  Future<BasicRoll> getDisturbance() async {
     List<String> list = await _jsonService.getStringList('assets/data_base/disturbance.json');
     int randomInt = _utilsService.getRandomInt(list.length);
-    return list[randomInt];
+    BasicRoll roll = BasicRoll(response: list[randomInt], roll: randomInt);
+    return roll;
   }
 
-  Future<String> getDisturbanceEvent() async {
+  Future<BasicRoll> getDisturbanceEvent() async {
     List<String> list = await _jsonService.getStringList('assets/data_base/disturbance_event.json');
     int randomInt = _utilsService.getRandomInt(list.length);
-    return list[randomInt];
+    BasicRoll roll = BasicRoll(response: list[randomInt], roll: randomInt);
+    return roll;
   }
 
-  Future<String> getAuditory() async {
+  Future<BasicRoll> getAuditory() async {
     List<String> list = await _jsonService.getStringList('assets/data_base/event_auditory.json');
     int randomInt = _utilsService.getRandomInt(list.length);
-    return list[randomInt];
+    BasicRoll roll = BasicRoll(response: list[randomInt], roll: randomInt);
+    return roll;
   }
 
-  Future<String> getAuditoryWhere() async {
+  Future<BasicRoll> getAuditoryWhere() async {
     List<String> list = await _jsonService.getStringList('assets/data_base/event_auditory_where.json');
     int randomInt = _utilsService.getRandomInt(list.length);
-    return list[randomInt];
+    BasicRoll roll = BasicRoll(response: list[randomInt], roll: randomInt);
+    return roll;
   }
 
-  Future<String> getVisual() async {
+  Future<BasicRoll> getVisual() async {
     List<String> list = await _jsonService.getStringList('assets/data_base/event_visual.json');
     int randomInt = _utilsService.getRandomInt(list.length);
-    return list[randomInt];
+    BasicRoll roll = BasicRoll(response: list[randomInt], roll: randomInt);
+    return roll;
   }
 
-  Future<String> getRandom() async {
+  Future<BasicRoll> getRandom() async {
     List<String> list = await _jsonService.getStringList('assets/data_base/event_random.json');
     int randomInt = _utilsService.getRandomInt(list.length);
-    return list[randomInt];
+    BasicRoll roll = BasicRoll(response: list[randomInt], roll: randomInt);
+    return roll;
   }
 
-  Future<String> getRumour() async {
+  Future<BasicRoll> getRumour() async {
     List<String> list = await _jsonService.getStringList('assets/data_base/rumour.json');
     int randomInt = _utilsService.getRandomInt(list.length);
-    return list[randomInt];
+    BasicRoll roll = BasicRoll(response: list[randomInt], roll: randomInt);
+    return roll;
   }
   
-  Future<String> getDanger() async {
+  Future<BasicRoll> getDanger() async {
     List<String> list = await _jsonService.getStringList('assets/data_base/danger.json');
     int randomInt = _utilsService.getRandomInt(list.length);
-    return list[randomInt];
+    BasicRoll roll = BasicRoll(response: list[randomInt], roll: randomInt);
+    return roll;
   }
 
   Future<DevelopmentRoll> getDevelopment() async {

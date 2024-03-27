@@ -17,12 +17,16 @@ import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/ques
 import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/verbs_card.dart';
 import 'package:flutter/material.dart';
 import 'package:cthulhu_solo_investigator_app/core/constants/rollTypes.dart' as rollTypes;
+import 'package:cthulhu_solo_investigator_app/core/models/myths_counter.model.dart';
+import 'package:cthulhu_solo_investigator_app/core/objects/myths_counter.dart' as MythsCounterList;
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 
 class CurrentSessionPage extends StatefulWidget {
 
   CurrentSessionPage();
   _CurrentSessionPageState createState() => _CurrentSessionPageState();
 }
+final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
 class _CurrentSessionPageState extends State<CurrentSessionPage> {
   final NPCService _npcService = NPCService();
@@ -33,6 +37,10 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
   late ValueNotifier<int> parentNotifier;
   List<Roll> rolls = [];
   List<NPC> npcs = [];
+  List<MythsCounter> mythsCounterList = MythsCounterList.mythsCounterList;
+  int mythsCounterCurrent = 0;
+  final _key = GlobalKey<ExpandableFabState>();
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -41,32 +49,76 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
+    return Scaffold(
+      body: Container(
         padding: EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Wrap(
-              spacing: 8.0, // spacing between adjacent items
+              spacing: 8.0,
               runSpacing: 4.0,
+              alignment: WrapAlignment.center,
               children: [
                 _buildButtonClues(),
                 _buildButtonVerbs(),
                 _buildButtonNPC(),
                 _buildButtonDirection(),
+                _buildButtonQuestion(),
                 _buildButtonQuestion()
               ],
-            ),
-            SizedBox(
-              height: 500,
+            ),     
+            SizedBox(height: 8),       
+            Expanded(
               child: ListView(
+                controller: _scrollController,
                 children: rolls.map((roll) => _buildRoll(roll)).toList(),
               ),
             ),
+            SizedBox(
+              height: 50,
+              child: Center(child: Text('Contador de Mitos: ${mythsCounterCurrent}')),
+            ),
           ],
         ),
-    ));
+      ),
+      floatingActionButtonLocation: ExpandableFab.location,
+      floatingActionButton: ExpandableFab(
+        key: _key,
+        distance: 80.0,
+        type: ExpandableFabType.up,
+        closeButtonBuilder: FloatingActionButtonBuilder(
+          size: 56,
+          builder: (BuildContext context, void Function()? onPressed,
+              Animation<double> progress) {
+            return IconButton(
+              onPressed: onPressed,
+              icon: const Icon(
+                Icons.check_circle_outline,
+                size: 40,                
+                color: Color.fromRGBO(88, 163, 153, 1),
+              ),
+            );
+          },
+        ),
+        // overlayStyle: ExpandableFabOverlayStyle(
+        //   blur: 5,
+        // ),
+        onOpen: () {
+          debugPrint('onOpen');
+        },
+        afterOpen: () {
+          debugPrint('afterOpen');
+        },
+        onClose: () {
+          debugPrint('onClose');
+        },
+        afterClose: () {
+          debugPrint('afterClose');
+        },
+        children: _buildMythsCounterButtons(),
+      ),
+    );
   }
 
   Widget _buildRoll(Roll roll) {
@@ -93,6 +145,7 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
         setState(() {
           Roll newRoll = Roll(type: rollTypes.ROLL_CLUE, cluesRoll: fetchedClues);
           rolls.add(newRoll);
+          _buttonScroll();
         });
       },
       child: const Text('Pistas'),
@@ -106,6 +159,7 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
         setState(() {
           Roll newRoll = Roll(type: rollTypes.ROLL_VERBS, verbRoll: fetchedVerbs);
           rolls.add(newRoll);
+          _buttonScroll();
         });
       },
       child: const Text('Verbos'),
@@ -120,6 +174,7 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
           Roll newRoll = Roll(type: rollTypes.ROLL_NPC, npc: fetchedNPC);
           rolls.add(newRoll);
           npcs.add(fetchedNPC);
+          _buttonScroll();
         });
       },
       child: const Text('NPC'),
@@ -133,7 +188,7 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
         setState(() {
           Roll newRoll = Roll(type: rollTypes.ROLL_DIRECTION, directionRoll: directionRoll);
           rolls.add(newRoll);
-          inspect(rolls);
+          _buttonScroll();
         });
       },
       child: const Text('Dirección'),
@@ -149,11 +204,37 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
     );
   }
 
+  List<Widget> _buildMythsCounterButtons() {
+    List<Widget> buttonList = [];
+    mythsCounterList.forEach((counter) {
+      buttonList.add(
+        FloatingActionButton.extended(
+            heroTag: null,
+            label: Text('${counter.event} (+${counter.counter})'),
+            onPressed: () async {
+            setState(() {
+              final state = _key.currentState;
+              mythsCounterCurrent = mythsCounterCurrent + counter.counter;
+              state!.toggle();
+            });
+      }));
+    });
+    return buttonList;
+  }
+
+  void _buttonScroll() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeOut,
+    );
+  }
+
   void _onSubmitQuestion(QuestionRoll qaRoll) {
     setState(() {
       Roll newRoll = Roll(type: rollTypes.ROLL_QUESTION, questionRoll: qaRoll);
       rolls.add(newRoll);
-      inspect(rolls);
+      _buttonScroll();
     });
   }
 
@@ -224,6 +305,5 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
       },
     );
   }
-
 
 }

@@ -10,29 +10,54 @@ class CluesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 200,
+      margin: EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color.fromRGBO(19, 19, 19, 1),
         borderRadius: BorderRadius.circular(16.0),
         border: Border.all(
-            color: const Color.fromRGBO(179, 179, 193, 1),
-            width: 1,
-          ),
+          color: Color.fromARGB(255, 255, 212, 21),
+          width: 2,
+        ),
       ),
       padding: EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('solo: ${cluesRoll.solo}'),
-          Text('tome: ${cluesRoll.tome}'),
-          Text('roomItem: ${cluesRoll.roomItem}'),
-          Text('weirdClue1: ${cluesRoll.weirdClue1}'),
-          Text('weirdClue2: ${cluesRoll.weirdClue2}'),
-          Text('weirdClue3: ${cluesRoll.weirdClue3}'),
-          Text('linkedClue1: ${cluesRoll.linkedClue1}'),
-          Text('linkedClue2: ${cluesRoll.linkedClue2}'),
-          Text('paranormalClue: ${cluesRoll.paranormalClue}'),
+          _buildTitle('Tomo de mitos:'),
+          _buildText(cluesRoll.tome),
+          SizedBox(height: 8),
+          _buildTitle('Objeto en habitación:'),
+          _buildText(cluesRoll.roomItem),
+          SizedBox(height: 8),
+          _buildTitle('Pista:'),
+          _buildText(cluesRoll.solo),
+          SizedBox(height: 8),
+          _buildTitle('Pistas enlazadas:'),
+          _buildText(cluesRoll.linkedClue1),
+          _buildText(cluesRoll.linkedClue2),
+          SizedBox(height: 8),
+          _buildTitle('Pista rara 1:'),
+          _buildText(cluesRoll.weirdClue1),
+          SizedBox(height: 8),
+          _buildTitle('Pista rara 2:'),
+          _buildText(cluesRoll.weirdClue2),
+          SizedBox(height: 8),
+          _buildTitle('Pista rara 3:'),
+          _buildText(cluesRoll.weirdClue3)
         ],
       ),
     );
+  }
+
+  Widget _buildTitle(String title) {
+    return Text(title,
+        style: TextStyle(
+            color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600));
+  }
+
+  Widget _buildText(String text) {
+    return Container(
+        padding: EdgeInsets.only(left: 20),
+        child: Text(text, style: TextStyle(color: Colors.white)));
   }
 }

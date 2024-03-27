@@ -8,8 +8,10 @@ class DirectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<String> responsesArray = directionRoll.actionList.map((obj) => obj.response).toList();
     return Container(
       width: 200,
+      margin: EdgeInsets.only(bottom:8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.0),
@@ -27,8 +29,11 @@ class DirectionCard extends StatelessWidget {
           if(directionRoll.directionType == "Evento") ...{
             Text('${directionRoll.directionSubType}'),
           },
+          Text('${directionRoll.directionTypeInfo}'),
           Text('${directionRoll.directionSubTypeInfo}'),
-          Text('${directionRoll.actionList.join(', ')}'),
+          if (directionRoll.actionList.length >= 1) ... {
+            Text('${responsesArray.join(', ')}'),
+          }
         ],
       ),
     );
