@@ -7,9 +7,9 @@ class NPCService {
   final JSONService _jsonService = JSONService();
   final UtilsService _utilsService = UtilsService();
 
-  Future<NPC> getNPCRoll() async {
+  Future<NPC> getNPCRoll(String genderSelected) async {
     String job = await getJob();
-    String gender = await getGender();
+    String gender = genderSelected != "Random" ? genderSelected : await getGender();
     String name = (gender == "Mujer" ? await getNameFemale() : await getNameMale()) as String;
     String surname =  await getSurname();
     String fullName = '$name $surname';

@@ -44,7 +44,7 @@ class DirectionService {
       } else if(devRoll.type == "VERBS") {
         actionList = await _verbsService.getVerbs();
       } else if(devRoll.type == "NPC") {
-        NPC newNPC = await _npcService.getNPCRoll();
+        NPC newNPC = await _npcService.getNPCRoll('Random');
         npc = NPC(
           job: newNPC.job, gender: newNPC.gender, fullName: newNPC.fullName, adjective: newNPC.adjective
         );

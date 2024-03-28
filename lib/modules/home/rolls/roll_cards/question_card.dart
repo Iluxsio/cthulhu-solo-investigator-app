@@ -13,23 +13,40 @@ class QuestionCard extends StatelessWidget {
       width: 200,
       margin: EdgeInsets.only(bottom:8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color.fromRGBO(19, 19, 19, 1),
         borderRadius: BorderRadius.circular(16.0),
         border: Border.all(
-            color: const Color.fromRGBO(179, 179, 193, 1),
-            width: 1,
-          ),
+          color: Color.fromARGB(255, 255, 212, 21),
+          width: 2,
+        ),
       ),
       padding: EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Pregunta: ${questionRoll.question}'),
-          Text('Probabilidad: ${questionRoll.likelihood}'),
-          Text('Respuesta: (${questionRoll.roll}) ${questionRoll.answer}'),
+          _buildTitle('Pregunta:'),
+          _buildText(questionRoll.question),
+          SizedBox(height: 8),
+          _buildTitle('Probabilidad:'),
+          _buildText(questionRoll.likelihood),
+          SizedBox(height: 8),
+          _buildTitle('Probabilidad:'),
+          _buildText(questionRoll.answer),
         ],
       ),
     );
+  }
+
+  Widget _buildTitle(String title) {
+    return Text(title,
+        style: TextStyle(
+            color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600));
+  }
+
+  Widget _buildText(String text) {
+    return Container(
+        padding: EdgeInsets.only(left: 20),
+        child: Text(text, style: TextStyle(color: Colors.white)));
   }
 }
 

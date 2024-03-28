@@ -45,6 +45,7 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
   int mythsCounterCurrent = 0;
   final _key = GlobalKey<ExpandableFabState>();
   ScrollController _scrollController = ScrollController();
+  String selectedOption = 'Posible';
 
   @override
   void initState() {
@@ -175,13 +176,7 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
   Widget _buildButtonNPC() {
     return ElevatedButton(
       onPressed: () async {
-        NPC fetchedNPC = await _npcService.getNPCRoll();
-        setState(() {
-          Roll newRoll = Roll(type: rollTypes.ROLL_NPC, npc: fetchedNPC);
-          rolls.add(newRoll);
-          npcs.add(fetchedNPC);
-          _buttonScroll();
-        });
+        _showNPCDialog();
       },
       child: const Text('NPC'),
     );
@@ -244,8 +239,8 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
 
   void _buttonScroll() {
     _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      duration: Duration(milliseconds: 500),
+      _scrollController.position.maxScrollExtent + 100,
+      duration: Duration(milliseconds: 100),
       curve: Curves.easeOut,
     );
   }
@@ -260,12 +255,18 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
 
   void _showQuestionDialog() {
     final TextEditingController questionInput = TextEditingController();
-    String selectedOption = 'Posible';
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Ask a Question'),
+          backgroundColor: const Color.fromRGBO(19, 19, 19, 1),
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: Color.fromARGB(255, 255, 212, 21)),
+            borderRadius:
+                BorderRadius.circular(15.0),
+          ),
+          title: Text('Haz una pregunta', style: TextStyle(
+            color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -276,31 +277,44 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                     labelText: 'Escribe tu pregunta',
                   ),
                 ),
               SizedBox(height: 20),
-              DropdownButton<String>(
-                value: selectedOption,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedOption = newValue!;
-                  });
-                },
-                items: <String>[
-                  'Imposible',
-                  'Improbable',
-                  'Poco probable',
-                  'Posible',
-                  'Probable',
-                  'Alto probable',
-                  'Certeza'
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+              Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+
+                decoration: BoxDecoration(
+      color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                child: DropdownButtonFormField<String>(
+                  value: selectedOption,
+                  onSaved : (String? newValue) {
+                    setState(() {
+                      selectedOption = newValue!;
+                    });
+                  },
+                  onChanged : (String? newValue) {
+                    setState(() {
+                      selectedOption = newValue!;
+                    });
+                  },
+                  items: <String>[
+                    'Imposible',
+                    'Improbable',
+                    'Poco probable',
+                    'Posible',
+                    'Probable',
+                    'Alto probable',
+                    'Certeza'
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
               ),
             ],
           ),
@@ -312,13 +326,64 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
                 _onSubmitQuestion(qaRoll);
                 Navigator.of(context).pop();
               },
-              child: Text('Submit'),
+              child: Text('Aceptar'),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _onSubmitNPC(String genderSelected) async {
+    NPC fetchedNPC = await _npcService.getNPCRoll(genderSelected);
+    setState(() {
+      Roll newRoll = Roll(type: rollTypes.ROLL_NPC, npc: fetchedNPC);
+      rolls.add(newRoll);
+      npcs.add(fetchedNPC);
+      _buttonScroll();
+    });
+  }
+
+  void _showNPCDialog() async {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color.fromRGBO(19, 19, 19, 1),
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: Color.fromARGB(255, 255, 212, 21)),
+            borderRadius:
+                BorderRadius.circular(15.0),
+          ),
+          title: Text('Elegir género', style: TextStyle(
+            color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600)),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                _onSubmitNPC('Hombre');
+                Navigator.of(context).pop();
+              },
+              child: Text('Hombre'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _onSubmitNPC('Mujer');
+                Navigator.of(context).pop();
+              },
+              child: Text('Mujer'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _onSubmitNPC('Random');
+                Navigator.of(context).pop();
+              },
+              child: Text('Random'),
             ),
           ],
         );
