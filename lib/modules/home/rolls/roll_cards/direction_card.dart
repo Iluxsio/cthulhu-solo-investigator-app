@@ -10,8 +10,7 @@ class DirectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     List<String> responsesArray = directionRoll.actionList.map((obj) => obj.response).toList();
     return Container(
-      width: 200,
-      margin: EdgeInsets.only(bottom:8),
+      width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         color: Color.fromRGBO(19, 19, 19, 1),
         borderRadius: BorderRadius.circular(16.0),

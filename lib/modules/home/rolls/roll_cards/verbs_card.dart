@@ -4,14 +4,13 @@ import 'package:flutter/widgets.dart';
 
 class VerbsCard extends StatelessWidget {
   final VerbRoll verbRoll;
-  VerbsCard(this.verbRoll);
+  VerbsCard({required this.verbRoll});
   late ValueNotifier<int> parentNotifier;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
-      margin: EdgeInsets.only(bottom: 8),
+      width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         color: Color.fromRGBO(19, 19, 19, 1),
         borderRadius: BorderRadius.circular(16.0),

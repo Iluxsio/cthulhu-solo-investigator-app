@@ -1,9 +1,9 @@
-import 'dart:developer';
 import 'package:cthulhu_solo_investigator_app/core/models/clues.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/direction.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/npc.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/odds.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/roll.model.dart';
+import 'package:cthulhu_solo_investigator_app/core/models/roll_types.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/scene.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/models/verbs.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/services/clues.service.dart';
@@ -20,6 +20,7 @@ import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/scen
 import 'package:cthulhu_solo_investigator_app/modules/home/rolls/roll_cards/verbs_card.dart';
 import 'package:flutter/material.dart';
 import 'package:cthulhu_solo_investigator_app/core/constants/rollTypes.dart' as rollTypes;
+import 'package:cthulhu_solo_investigator_app/core/objects/roll_types.dart' as rollTypesList;
 import 'package:cthulhu_solo_investigator_app/core/models/myths_counter.model.dart';
 import 'package:cthulhu_solo_investigator_app/core/objects/myths_counter.dart' as MythsCounterList;
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
@@ -31,7 +32,7 @@ class CurrentSessionPage extends StatefulWidget {
 }
 final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
-class _CurrentSessionPageState extends State<CurrentSessionPage> {
+class _CurrentSessionPageState extends State<CurrentSessionPage> with SingleTickerProviderStateMixin{
   final NPCService _npcService = NPCService();
   final DirectionService _directionService = DirectionService();
   final VerbsService _verbsService = VerbsService();
@@ -46,10 +47,20 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
   final _key = GlobalKey<ExpandableFabState>();
   ScrollController _scrollController = ScrollController();
   String selectedOption = 'Posible';
+  late TabController _controller;
+  int _selectedIndex = 0;
+  List<RollTypes> rollTypesButtonList = rollTypesList.list;
 
   @override
   void initState() {
     super.initState();
+    _controller = TabController(vsync: this, length: 2);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -57,35 +68,67 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 4.0,
-              alignment: WrapAlignment.center,
-              children: [
-                _buildButtonClues(),
-                _buildButtonVerbs(),
-                _buildButtonNPC(),
-                _buildButtonDirection(),
-                _buildButtonQuestion(),
-                _buildButtonScenes()
-              ],
-            ),     
-            SizedBox(height: 8),       
-            Expanded(
-              child: ListView(
-                controller: _scrollController,
-                children: rolls.map((roll) => _buildRoll(roll)).toList(),
+        child: DefaultTabController(
+          length: 2,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              TabBar(
+                controller: _controller,
+                labelPadding: const EdgeInsets.only(right: 5),
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicator: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                indicatorColor: const Color.fromARGB(255, 70, 6, 207),
+                overlayColor: MaterialStateProperty.all(Colors.transparent),
+                dividerColor: Colors.transparent,
+                labelStyle: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w600,
+                  color: Color.fromARGB(255, 255, 255, 255),
+                ),
+                unselectedLabelStyle: TextStyle(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                ),
+                onTap: (index) {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
+                tabs: [
+                  Center(child: Text('Eventos')),
+                  Center(child: Text('Historial')),
+                ],
               ),
-            ),
-            SizedBox(
-              height: 50,
-              child: Center(child: Text('Contador de Mitos: ${mythsCounterCurrent}', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600))),
-            ),
-          ],
-        ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: TabBarView(
+                  controller: _controller,
+                  children: [
+                    getButtons(context),
+                    Column(
+                      children: [
+                        SizedBox(height: 8),       
+                        Expanded(
+                          child: ListView(
+                            controller: _scrollController,
+                            children: rolls.map((roll) => _buildRoll(roll)).toList(),
+                          ),
+                        ),
+                      ],
+                    )                  
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 50,
+                child: Center(child: Text('Contador de Mitos: ${mythsCounterCurrent}', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600))),
+              ),
+            ],
+          ),
+        ),        
       ),
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: ExpandableFab(
@@ -126,10 +169,74 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
     );
   }
 
+  Widget getButtons(BuildContext context) {
+    List<Widget> buttonList = [];
+    rollTypesButtonList.forEach((rollType) {
+      buttonList.add(createButtons(rollType));
+    });
+    return GridView.count(
+      crossAxisCount: 2,
+      childAspectRatio: 1.5,
+      children: buttonList
+    );
+  }
+
+  Widget createButtons(RollTypes rollType) {
+    return GestureDetector(
+      onTap: () {
+        _buildButtonClick(rollType);
+      },
+      child: Container(
+        margin: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 85, 85, 85),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              rollType.icon,
+              size: 24,
+              color: Colors.white
+            ),
+            Text(
+              rollType.name,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _buildButtonClick(RollTypes roll) {
+    switch (roll.type) {
+      case rollTypes.ROLL_VERBS:
+        return addVerbs();
+      case rollTypes.ROLL_NPC:
+        return addNPC();
+      case rollTypes.ROLL_DIRECTION:
+        return addDirection();
+      case rollTypes.ROLL_CLUE:
+        return addClue();
+      case rollTypes.ROLL_QUESTION:
+        return addQuestion();
+      case rollTypes.ROLL_SCENE:
+        return addScene();
+      default:
+        return null;
+    }
+  }
+
   Widget _buildRoll(Roll roll) {
     switch (roll.type) {
       case rollTypes.ROLL_VERBS:
-        return VerbsCard(roll.verbRoll!);
+        return VerbsCard(verbRoll: roll.verbRoll!);
       case rollTypes.ROLL_NPC:
         return NPCCard(roll.npc!);
       case rollTypes.ROLL_DIRECTION:
@@ -145,78 +252,52 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
     }
   }
 
-  Widget _buildButtonClues() {
-    return ElevatedButton(
-      onPressed: () async {
-        CluesRoll fetchedClues = await _cluesService.getCluesRoll();
-        setState(() {
-          Roll newRoll = Roll(type: rollTypes.ROLL_CLUE, cluesRoll: fetchedClues);
-          rolls.add(newRoll);
-          _buttonScroll();
-        });
-      },
-      child: const Text('Pistas'),
-    );
+  void addClue() async {
+    CluesRoll fetchedClues = await _cluesService.getCluesRoll();
+    setState(() {
+      Roll newRoll = Roll(type: rollTypes.ROLL_CLUE, cluesRoll: fetchedClues);
+      rolls.add(newRoll);
+      _buttonScroll();
+      _showRollDialog(newRoll);
+    });
   }
 
-  Widget _buildButtonVerbs() {
-    return ElevatedButton(
-      onPressed: () async {
-        VerbRoll fetchedVerbs = await _verbsService.getVerbRoll();
-        setState(() {
-          Roll newRoll = Roll(type: rollTypes.ROLL_VERBS, verbRoll: fetchedVerbs);
-          rolls.add(newRoll);
-          _buttonScroll();
-        });
-      },
-      child: const Text('Verbos'),
-    );
+  void addVerbs() async {
+    VerbRoll fetchedVerbs = await _verbsService.getVerbRoll();
+    setState(() {
+      Roll newRoll = Roll(type: rollTypes.ROLL_VERBS, verbRoll: fetchedVerbs);
+      rolls.add(newRoll);
+      _buttonScroll();
+      _showRollDialog(newRoll);
+    });
   }
 
-  Widget _buildButtonNPC() {
-    return ElevatedButton(
-      onPressed: () async {
-        _showNPCDialog();
-      },
-      child: const Text('NPC'),
-    );
+  void addNPC() async {
+    _showNPCDialog();
   }
 
-  Widget _buildButtonDirection() {
-    return ElevatedButton(
-      onPressed: () async {
-        DirectionRoll directionRoll = await _directionService.getDirectionRoll(mythsCounterCurrent);
-        setState(() {
-          Roll newRoll = Roll(type: rollTypes.ROLL_DIRECTION, directionRoll: directionRoll);
-          rolls.add(newRoll);
-          _buttonScroll();
-        });
-      },
-      child: const Text('Dirección'),
-    );
+  void addDirection() async {
+    DirectionRoll directionRoll = await _directionService.getDirectionRoll(mythsCounterCurrent);
+    setState(() {
+      Roll newRoll = Roll(type: rollTypes.ROLL_DIRECTION, directionRoll: directionRoll);
+      rolls.add(newRoll);
+      _buttonScroll();
+      _showRollDialog(newRoll);
+    });
   }
 
-  Widget _buildButtonQuestion() {
-    return ElevatedButton(
-      onPressed: () async {
-        _showQuestionDialog();
-      },
-      child: const Text('Pregunta'),
-    );
+  void addQuestion() async {
+    _showQuestionDialog();
   }
 
-  Widget _buildButtonScenes() {
-    return ElevatedButton(
-      onPressed: () async {
-        SceneRoll sceneRoll = await _sceneService.getSceneRoll(mythsCounterCurrent);
-        setState(() {
-          Roll newRoll = Roll(type: rollTypes.ROLL_SCENE, sceneRoll: sceneRoll);
-          rolls.add(newRoll);
-          _buttonScroll();
-        });      
-      },
-      child: const Text('Escenas'),
-    );
+  void addScene() async {
+    SceneRoll sceneRoll = await _sceneService.getSceneRoll(mythsCounterCurrent);
+    setState(() {
+      Roll newRoll = Roll(type: rollTypes.ROLL_SCENE, sceneRoll: sceneRoll);
+      rolls.add(newRoll);
+      _buttonScroll();
+      _showRollDialog(newRoll);
+    });
   }
 
   List<Widget> _buildMythsCounterButtons() {
@@ -238,11 +319,11 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
   }
 
   void _buttonScroll() {
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent + 100,
-      duration: Duration(milliseconds: 100),
-      curve: Curves.easeOut,
-    );
+    // _scrollController.animateTo(
+    //   _scrollController.position.maxScrollExtent + 100,
+    //   duration: Duration(milliseconds: 100),
+    //   curve: Curves.easeOut,
+    // );
   }
 
   void _onSubmitQuestion(QuestionRoll qaRoll) {
@@ -250,12 +331,13 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
       Roll newRoll = Roll(type: rollTypes.ROLL_QUESTION, questionRoll: qaRoll);
       rolls.add(newRoll);
       _buttonScroll();
+      _showRollDialog(newRoll);
     });
   }
 
   void _showQuestionDialog() {
     final TextEditingController questionInput = TextEditingController();
-    showDialog(
+    showDialog<QuestionRoll>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -323,8 +405,8 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
               onPressed: () async {
                 String question = questionInput.text;
                 QuestionRoll qaRoll = await _questionService.getQuestionRoll(question, selectedOption);
-                _onSubmitQuestion(qaRoll);
-                Navigator.of(context).pop();
+                //_onSubmitQuestion(qaRoll);
+                Navigator.of(context).pop(qaRoll);
               },
               child: Text('Aceptar'),
             ),
@@ -337,7 +419,16 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
           ],
         );
       },
-    );
+    ).then((value) {
+        if (value == null) {
+          print('dialog closed with on barrier dismissal or android back button');
+          return;
+        }
+        if (value !=null) {
+          _onSubmitQuestion(value);
+        }
+      },
+    );;
   }
 
   Future<void> _onSubmitNPC(String genderSelected) async {
@@ -347,6 +438,7 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
       rolls.add(newRoll);
       npcs.add(fetchedNPC);
       _buttonScroll();
+      _showRollDialog(newRoll);
     });
   }
 
@@ -386,6 +478,35 @@ class _CurrentSessionPageState extends State<CurrentSessionPage> {
               child: Text('Random'),
             ),
           ],
+        );
+      },
+    );
+  }
+
+ void _showRollDialog(Roll roll) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          alignment: Alignment.bottomCenter,
+          insetPadding: EdgeInsets.zero,
+          backgroundColor: const Color.fromRGBO(19, 19, 19, 1),
+          shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(15.0),
+          ),
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.all(8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(roll.type, style: TextStyle(
+                  color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600)),
+                _buildRoll(roll)
+              ],
+            ),
+          ),        
         );
       },
     );

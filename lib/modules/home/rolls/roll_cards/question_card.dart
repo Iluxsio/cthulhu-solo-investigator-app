@@ -10,8 +10,7 @@ class QuestionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
-      margin: EdgeInsets.only(bottom:8),
+      width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         color: Color.fromRGBO(19, 19, 19, 1),
         borderRadius: BorderRadius.circular(16.0),
